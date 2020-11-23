@@ -334,3 +334,63 @@ Now find one that starts with six zeroes.
 #+RESULTS:
 : 1038736
 : 
+* Day 5
+** part 1
+Santa needs help figuring out which strings in his text file are naughty or nice.
+
+A nice string is one with all of the following properties:
+
+It contains at least three vowels (aeiou only), like aei, xazegov, or
+aeiouaeiouaeiou.  It contains at least one letter that appears twice
+in a row, like xx, abcdde (dd), or aabbccdd (aa, bb, cc, or dd).  It
+does not contain the strings ab, cd, pq, or xy, even if they are part
+of one of the other requirements.
+
+For example:
+
+#+begin_quote
+ugknbfddgicrmopn is nice because it has at least three vowels (u...i...o...), a double letter (...dd...), and none of the disallowed substrings.
+aaa is nice because it has at least three vowels and a double letter, even though the letters used by different rules overlap.
+jchzalrnumimnmhp is naughty because it has no double letter.
+haegwjzuvuyypxyu is naughty because it contains the string xy.
+dvszwmarrgswjxmb is naughty because it contains only one vowel.
+#+end_quote
+
+How many strings are nice?
+
+#+begin_src python :results output
+  def has_three_vowels(string):
+      vowels = 'aeiou'
+      count = 0
+      for vowel in vowels:
+          count += string.count(vowel)
+
+      return count >= 3
+
+  def no_bad_pairs(string):
+      bad_pairs = ['ab', 'cd', 'pq', 'xy']
+      for pair in bad_pairs:
+          if pair in string:
+              return False
+      return True
+
+  def has_doubled_letter(string):
+      for pos in range(len(string)-1):
+          if string[pos] == string[pos+1]:
+              return True
+      return False
+
+  strings = open("inputs/2015-Day5", 'r').read().split("\n")
+
+  good_strings = 0
+  for string in strings:
+      if has_three_vowels(string) and \
+         no_bad_pairs(string) and \
+         has_doubled_letter(string):
+          good_strings += 1
+
+  print(good_strings)
+#+end_src
+
+#+RESULTS:
+: 236
