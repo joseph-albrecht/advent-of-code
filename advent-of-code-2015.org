@@ -532,3 +532,70 @@ After following the instructions, how many lights are lit?
 
 #+RESULTS:
 : 543903
+
+** part 2
+You just finish implementing your winning light pattern when you
+realize you mistranslated Santa's message from Ancient Nordic Elvish.
+
+The light grid you bought actually has individual brightness controls;
+each light can have a brightness of zero or more. The lights all start
+at zero.
+
+The phrase turn on actually means that you should increase the
+brightness of those lights by 1.
+
+The phrase turn off actually means that you should decrease the
+brightness of those lights by 1, to a minimum of zero.
+
+The phrase toggle actually means that you should increase the
+brightness of those lights by 2.
+
+What is the total brightness of all lights combined after following
+Santa's instructions?
+
+For example:
+
+turn on 0,0 through 0,0 would increase the total brightness by 1.
+toggle 0,0 through 999,999 would increase the total brightness by 2000000.
+
+#+begin_src python :results output
+  width = 1000
+  height = 1000
+  grid = []
+  for x in range(width):
+      grid.append([0] * height)
+
+  def perform_action(action, start, end, grid):
+      for x in range(start[0], end[0] + 1, 1):
+          for y in range(start[1], end[1] + 1, 1):
+              if action == "toggle":
+                  grid[x][y] += 2
+              if action == "off":
+                  if grid[x][y] > 0:
+                      grid[x][y] += -1
+              elif action == "on":
+                  grid[x][y] += 1
+
+  steps = open("inputs/2015-Day6", 'r').read().split("\n")
+  #steps = ["toggle 0,0 through 9,0"]
+  for step in steps:
+      parts = step.split(" ")
+      start = list(map(lambda x: int(x), parts[-3].split(",")))
+      end = list(map(lambda x: int(x), parts[-1].split(",")))
+      action = None
+      if len(parts) == 4:
+          action = "toggle"
+      else:
+          action = parts[1]
+      perform_action(action, start, end, grid)
+
+  on_lights = 0
+  for x in range(width):
+      for y in range(height):
+          on_lights += grid[x][y]
+
+  print(on_lights)
+#+end_src
+
+#+RESULTS:
+: 14687245
