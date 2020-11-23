@@ -394,3 +394,63 @@ How many strings are nice?
 
 #+RESULTS:
 : 236
+
+** part 2
+Realizing the error of his ways, Santa has switched to a better model
+of determining whether a string is naughty or nice. None of the old
+rules apply, as they are all clearly ridiculous.
+
+Now, a nice string is one with all of the following properties:
+
+It contains a pair of any two letters that appears at least twice in
+the string without overlapping, like xyxy (xy) or aabcdefgaa (aa), but
+not like aaa (aa, but it overlaps).  It contains at least one letter
+which repeats with exactly one letter between them, like xyx,
+abcdefeghi (efe), or even aaa.
+
+For example:
+
+#+begin_quote
+qjhvhtzxzqqjkmpb is nice because is has a pair that appears twice (qj) and a letter that repeats with exactly one letter between them (zxz).
+xxyxx is nice because it has a pair that appears twice and a letter that repeats with one between, even though the letters used by each rule overlap.
+uurcxstgmygtbstg is naughty because it has a pair (tg) but no repeat with a single letter between them.
+ieodomkazucvgmuy is naughty because it has a repeating letter with one between (odo), but no pair that appears twice.
+#+end_quote
+
+How many strings are nice under these new rules?
+
+#+begin_src python :results output
+  from itertools import combinations
+  def repeated_pair(string):
+    comparisons = combinations(range(len(string) - 1), 2)
+
+    for one, two in comparisons:
+      if string[one:one+2] == string[two:two+2] and \
+         one != two:
+        if abs(two - one) > 1:
+          return True
+    return False
+
+  def has_doubled_letter(string):
+    for pos in range(len(string)-2):
+      if string[pos] == string[pos+2]:
+        return True
+    return False
+
+  def good_string(string):
+    if repeated_pair(string) and \
+       has_doubled_letter(string):
+      return True
+    return False
+  strings = open("inputs/2015-Day5", 'r').read().split("\n")
+
+  good_strings = 0
+  for string in strings:
+    if good_string(string):
+      good_strings += 1
+
+  print(good_strings)
+#+end_src
+
+#+RESULTS:
+: 51
