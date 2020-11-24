@@ -1634,3 +1634,98 @@ the total score of the highest-scoring cookie you can make?
   print(calc_score(recipe))
     
 #+end_src
+
+** part 2
+Your cookie recipe becomes wildly popular! Someone asks if you can
+make another recipe that has exactly 500 calories per cookie (so they
+can use it as a meal replacement). Keep the rest of your award-winning
+process the same (100 teaspoons, same ingredients, same scoring
+system).
+
+For example, given the ingredients above, if you had instead selected
+40 teaspoons of butterscotch and 60 teaspoons of cinnamon (which still
+adds to 100), the total calorie count would be 40*8 + 60*3 = 500. The
+total score would go down, though: only 57600000, the best you can do
+in such trying circumstances.
+
+Given the ingredients in your kitchen and their properties, what is
+the total score of the highest-scoring cookie you can make with a
+calorie total of 500?
+
+#+begin_src python :results output
+  import random
+  import functools
+  data = open("inputs/2015-Day15", 'r').read().split("\n")
+
+  ingredients = {}
+
+  for line in data:
+      parts = line.split(" ")
+      name = parts[0]
+      cap = int(parts[2][:-1])
+      dur = int(parts[4][:-1])
+      fla = int(parts[6][:-1])
+      tex = int(parts[8][:-1])
+      cal = int(parts[10])
+
+      ingredients[name] = {'capacity': cap,
+                           'durability' : dur,
+                           'flavor' : fla,
+                           'texture' : tex,
+                           'calories' : cal}
+
+
+  recipe = {}
+  tried_recipes = []
+  for num, ingredient in enumerate(ingredients):
+      if num == 0:
+          recipe[ingredient] = 100
+      else:
+          recipe[ingredient] = 0
+
+  def get_neighbor(a_recipe, loops=0):
+      ingredients_in_recipe = list(filter(lambda x: a_recipe[x] > 0, a_recipe))
+      ingredient_to_decrease = random.choice(ingredients_in_recipe)
+
+      ingredients_left = list(filter(lambda x: x != ingredient_to_decrease, ingredients.keys()))
+      ingredient_to_increase = random.choice(ingredients_left)
+
+      new_recipe = a_recipe.copy()
+      new_recipe[ingredient_to_decrease] -= 1
+      new_recipe[ingredient_to_increase] += 1
+
+      if new_recipe in tried_recipes and loops < 5:
+          return get_neighbor(new_recipe, loops=loops+1)
+      return new_recipe
+
+
+  def calc_score(r):
+      values = {'capacity' : 0,
+                'durability' : 0,
+                'flavor' : 0,
+                'texture' : 0}
+      calories = 0
+      for ingredient, amount in r.items():
+          for quality, value in ingredients[ingredient].items():
+              if quality != "calories":
+                  values[quality] += amount * value
+              else:
+                  calories += amount * value
+      if calories != 500:
+          return 0
+      else:
+          return functools.reduce(lambda x, y: x*y, values.values()) 
+
+  for iteration in range(10000):
+      neighbor = get_neighbor(recipe)
+      tried_recipes.append(neighbor)
+      neighbor_score = calc_score(neighbor)
+      recipe_score = calc_score(recipe)
+
+      if neighbor_score >= recipe_score:
+          recipe = neighbor
+
+  print(recipe)
+  print(calc_score(recipe))
+#+end_src
+
