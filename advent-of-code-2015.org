@@ -1249,3 +1249,85 @@ found [[https://old.reddit.com/r/adventofcode/comments/3wh73d/day_12_solutions/c
 
 #+RESULTS:
 : 68466
+
+* Day 13
+** part 1
+In years past, the holiday feast with your family hasn't gone so
+well. Not everyone gets along! This year, you resolve, will be
+different. You're going to find the optimal seating arrangement and
+avoid all those awkward conversations.
+
+You start by writing up a list of everyone invited and the amount
+their happiness would increase or decrease if they were to find
+themselves sitting next to each other person. You have a circular
+table that will be just big enough to fit everyone comfortably, and so
+each person will have exactly two neighbors.
+
+For example, suppose you have only four attendees planned, and you
+calculate their potential happiness as follows:
+
+Alice would gain 54 happiness units by sitting next to Bob.
+Alice would lose 79 happiness units by sitting next to Carol.
+Alice would lose 2 happiness units by sitting next to David.
+Bob would gain 83 happiness units by sitting next to Alice.
+Bob would lose 7 happiness units by sitting next to Carol.
+Bob would lose 63 happiness units by sitting next to David.
+Carol would lose 62 happiness units by sitting next to Alice.
+Carol would gain 60 happiness units by sitting next to Bob.
+Carol would gain 55 happiness units by sitting next to David.
+David would gain 46 happiness units by sitting next to Alice.
+David would lose 7 happiness units by sitting next to Bob.
+David would gain 41 happiness units by sitting next to Carol.
+
+Then, if you seat Alice next to David, Alice would lose 2 happiness
+units (because David talks so much), but David would gain 46 happiness
+units (because Alice is such a good listener), for a total change
+of 44.
+
+If you continue around the table, you could then seat Bob next to
+Alice (Bob gains 83, Alice gains 54). Finally, seat Carol, who sits
+next to Bob (Carol gains 60, Bob loses 7) and David (Carol gains 55,
+David gains 41). The arrangement looks like this:
+
+     +41 +46
++55   David    -2
+Carol       Alice
++60    Bob    +54
+     -7  +83
+
+After trying every other seating arrangement in this hypothetical
+scenario, you find that this one is the most optimal, with a total
+change in happiness of 330.
+
+What is the total change in happiness for the optimal seating
+arrangement of the actual guest list?
+
+#+begin_src python :results output
+  import itertools
+  pref_list = open("inputs/2015-Day13", 'r').read().split("\n")
+
+  prefs = {}
+  for pref in pref_list:
+      parts = pref.split(" ")
+      gl = parts[2]
+      desire = int(parts[3])
+      subj = parts[0]
+      obj = parts[10]
+
+      if gl == "lose":
+          desire *= -1
+
+      if not subj in prefs:
+          prefs[subj] = {}
+
+      prefs[subj][obj[:-1]] = desire
+
+  arrangements = list(itertools.permutations(prefs.keys(), len(prefs)))
+
+  happiness = []
+  num_guests = len(prefs)
+  for a in arrangements:
+      happiness.append(sum(map(lambda x: prefs[a[x]][a[((x+1) % num_guests)]] + prefs[a[((x+1) % num_guests)]][a[x]], range(len(a)))))
+
+  print(max(happiness))
+#+end_src
