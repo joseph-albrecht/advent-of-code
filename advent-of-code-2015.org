@@ -898,3 +898,46 @@ What is the distance of the shortest route?
 #+RESULTS:
 : 117
 
+** part 2
+The next year, just to show off, Santa decides to take the route with
+the longest distance instead.
+
+He can still start and end at any two (different) locations he wants,
+and he still must visit each location exactly once.
+
+For example, given the distances above, the longest route would be 982
+via (for example) Dublin -> London -> Belfast.
+
+What is the distance of the longest route?
+
+#+begin_src python :results output
+  import itertools
+  distance_list = open("inputs/2015-Day9", 'r').read().split("\n")
+
+  distances = {}
+
+  for distance in distance_list:
+      parts = distance.split(" ")
+      start = parts[0]
+      end = parts[2]
+      dist = parts[4]
+      if start not in distances:
+          distances[start] = {}
+      if end not in distances:
+          distances[end] = {}
+
+      distances[start][end] = int(dist)
+      distances[end][start] = int(dist)
+
+  paths = itertools.permutations(distances.keys(), len(distances))
+  path_distances = []
+  for path in paths:
+      distance = 0
+      for start, end in zip(path[:-1], path[1:]):
+          distance += distances[start][end]
+      path_distances.append(distance)
+  print(max(path_distances))
+#+end_src
+
+#+RESULTS:
+: 909
