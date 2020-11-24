@@ -1567,6 +1567,8 @@ Given the ingredients in your kitchen and their properties, what is
 the total score of the highest-scoring cookie you can make?
 
 #+begin_src python :results output
+  import random
+  import functools
   data = open("inputs/2015-Day15", 'r').read().split("\n")
 
   ingredients = {}
@@ -1585,7 +1587,50 @@ the total score of the highest-scoring cookie you can make?
                            'flavor' : fla,
                            'texture' : tex,
                            'calories' : cal}
+
+
+  recipe = {}
+  for num, ingredient in enumerate(ingredients):
+      if num == 0:
+          recipe[ingredient] = 100
+      else:
+          recipe[ingredient] = 0
+
+  def get_neighbor(a_recipe):
+      ingredients_in_recipe = list(filter(lambda x: a_recipe[x] > 0, a_recipe))
+      ingredient_to_decrease = random.choice(ingredients_in_recipe)
+
+      ingredients_left = list(filter(lambda x: x != ingredient_to_decrease, ingredients.keys()))
+      ingredient_to_increase = random.choice(ingredients_left)
+    
+      new_recipe = a_recipe.copy()
+      new_recipe[ingredient_to_decrease] -= 1
+      new_recipe[ingredient_to_increase] += 1
+
+      return new_recipe
+
+  def calc_score(r):
+      values = {'capacity' : 0,
+                'durability' : 0,
+                'flavor' : 0,
+                'texture' : 0}
+      for ingredient, amount in r.items():
+          for quality, value in ingredients[ingredient].items():
+              if quality != "calories":
+                  values[quality] += amount * value
+
+      return functools.reduce(lambda x, y: x*y, values.values())
+    
+  for iteration in range(100000):
+      neighbor = get_neighbor(recipe)
+      neighbor_score = calc_score(neighbor)
+      recipe_score = calc_score(recipe)
+
+      if neighbor_score >= recipe_score:
+          recipe = neighbor
+
   print(ingredients)
-
-
+  print(recipe)
+  print(calc_score(recipe))
+    
 #+end_src
