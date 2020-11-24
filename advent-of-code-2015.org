@@ -1022,3 +1022,100 @@ process 50 times. What is the length of the new result?
 
   print(len(sequence))
 #+end_src
+
+* Day 11
+** part 1
+Santa's previous password expired, and he needs help choosing a new
+one.
+
+To help him remember his new password after the old one expires, Santa
+has devised a method of coming up with a password based on the
+previous one. Corporate policy dictates that passwords must be exactly
+eight lowercase letters (for security reasons), so he finds his new
+password by incrementing his old password string repeatedly until it
+is valid.
+
+Incrementing is just like counting with numbers: xx, xy, xz, ya, yb,
+and so on. Increase the rightmost letter one step; if it was z, it
+wraps around to a, and repeat with the next letter to the left until
+one doesn't wrap around.
+
+Unfortunately for Santa, a new Security-Elf recently started, and he
+has imposed some additional password requirements:
+
+- Passwords must include one increasing straight of at least three
+  letters, like abc, bcd, cde, and so on, up to xyz. They cannot skip
+  letters; abd doesn't count.
+- Passwords may not contain the letters i, o, or l, as these letters
+  can be mistaken for other characters and are therefore confusing.
+- Passwords must contain at least two different, non-overlapping pairs
+  of letters, like aa, bb, or zz.
+
+For example:
+
+- hijklmmn meets the first requirement (because it contains the
+  straight hij) but fails the second requirement requirement (because
+  it contains i and l).
+- abbceffg meets the third requirement (because it repeats bb and ff)
+  but fails the first requirement.
+- abbcegjk fails the third requirement, because it only has one double
+  letter (bb).
+- The next password after abcdefgh is abcdffaa.
+- The next password after ghijklmn is ghjaabcc, because you eventually
+  skip all the passwords that start with ghi..., since i is not
+  allowed.
+
+Given Santa's current password (your puzzle input), what should his
+next password be?
+
+input ~cqjxjnds~
+
+#+begin_src python :results output
+  letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+
+  def increment(string):
+      last_letter = string[-1]
+      if last_letter == 'z':
+          return increment(string[:-1]) + 'a'
+      else:
+          next_letter = letters[letters.index(last_letter) + 1]
+          return string[:-1] + next_letter
+
+  def has_increase(string):
+      sequence = list(map(lambda x: letters.index(x), string))
+
+      for num in range(len(string)-2):
+          if sequence[num+2] - sequence[num+1] == 1 and \
+             sequence[num+1] - sequence[num] == 1:
+              return True
+
+      return False
+
+  def has_pairs(string):
+      pairs = []
+      for one, two in zip(string[:-1], string[1:]):
+          if one == two:
+              if len(pairs) > 0:
+                  if one not in pairs[0] and two not in pairs[0]:
+                      return True
+              pairs.append((one, two))
+
+      return False
+
+  def no_confuse(string):
+      return 'i' not in string and \
+             'l' not in string and \
+             'o' not in string
+
+  password = "cqjxjnds"
+  for iteration in range(1000000):
+      password = increment(password)
+      if has_increase(password) and \
+         has_pairs(password) and \
+         no_confuse(password):
+          print("found")
+          break
+
+  print(password)
+    
+#+end_src
