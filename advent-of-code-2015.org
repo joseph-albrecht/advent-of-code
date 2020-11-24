@@ -682,7 +682,6 @@ input), what signal is ultimately provided to wire a?
       except ValueError:
           pass
     
-      print(gates[instruction], " -> ", instruction)
       parts = gates[instruction].split(" ")
 
       if "NOT" in parts:
@@ -700,3 +699,52 @@ input), what signal is ultimately provided to wire a?
 
   print(calculate("a"))
 #+end_src
+
+#+RESULTS:
+: 16076
+
+** part 2
+Now, take the signal you got on wire a, override wire b to that
+signal, and reset the other wires (including wire a).
+
+What new signal is ultimately provided to wire a?
+
+#+begin_src python :results output
+  import functools
+
+  descriptions = open("inputs/2015-Day7", 'r').read().split("\n")
+  gates = {}
+  for description in descriptions:
+      gate, out = description.split(" -> ")
+      gates[out.strip()] = gate
+
+  @functools.lru_cache()
+  def calculate(instruction):
+      try:
+          return int(instruction)
+      except ValueError:
+          pass
+
+      parts = gates[instruction].split(" ")
+
+      if "NOT" in parts:
+          return ~calculate(parts[1])
+      elif "AND" in parts:
+          return calculate(parts[0]) & calculate(parts[2])
+      elif "OR" in parts:
+          return calculate(parts[0]) |  calculate(parts[2])
+      elif "LSHIFT" in parts:
+          return calculate(parts[0]) <<  calculate(parts[2])
+      elif "RSHIFT" in parts:
+          return calculate(parts[0]) >>  calculate(parts[2])
+      else:
+          return calculate(parts[0])
+
+  gates["b"] = str(calculate("a"))
+  calculate.cache_clear()
+  print(calculate("a"))
+#+end_src
+
+#+RESULTS:
+: 2797
+
