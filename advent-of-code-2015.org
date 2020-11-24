@@ -1447,3 +1447,77 @@ exactly 2503 seconds, what distance has the winning reindeer traveled?
 
   print(max(distances))
 #+end_src
+
+** part 2
+Seeing how reindeer move in bursts, Santa decides he's not pleased
+with the old scoring system.
+
+Instead, at the end of each second, he awards one point to the
+reindeer currently in the lead. (If there are multiple reindeer tied
+for the lead, they each get one point.) He keeps the traditional 2503
+second time limit, of course, as doing otherwise would be entirely
+ridiculous.
+
+Given the example reindeer from above, after the first second, Dancer
+is in the lead and gets one point. He stays in the lead until several
+seconds into Comet's second burst: after the 140th second, Comet pulls
+into the lead and gets his first point. Of course, since Dancer had
+been in the lead for the 139 seconds before that, he has accumulated
+139 points by the 140th second.
+
+After the 1000th second, Dancer has accumulated 689 points, while poor
+Comet, our old champion, only has 312. So, with the new scoring
+system, Dancer would win (if the race ended at 1000 seconds).
+
+Again given the descriptions of each reindeer (in your puzzle input),
+after exactly 2503 seconds, how many points does the winning reindeer
+have?
+
+#+begin_src python :results output
+  reindeer_list = open("inputs/2015-Day14", 'r').read().split("\n")
+
+  reindeer_speeds = []
+
+  for r in reindeer_list:
+      parts = r.split(" ")
+      name = parts[0]
+      speed = int(parts[3])
+      time = int(parts[6])
+      rest = int(parts[-2])
+
+      reindeer = {}
+      reindeer['name']  = name
+      reindeer['speed'] = speed
+      reindeer['time']  = time
+      reindeer['rest']  = rest
+      reindeer_speeds.append(reindeer)
+    
+  def update_distance(reindeer, time):
+      cycle = reindeer['time'] + reindeer['rest']
+      iterations = time // cycle
+
+      remaining_time = time - (cycle * iterations)
+      if remaining_time >= reindeer['time']:
+          return 0
+
+      return reindeer['speed']
+
+  def update_scores():
+      high_score = max(distances.values())
+      winning = filter(lambda r: high_score == distances[r], scores)
+      for r in winning:
+          scores[r] += 1
+    
+  distances = {}
+  scores = {}
+  for r in reindeer_speeds:
+      scores[r['name']] = 0
+      distances[r['name']] = 0
+
+  for s in range(2503):
+      for r in reindeer_speeds:
+          distances[r['name']] += update_distance(r, s)
+
+      update_scores()
+  print(scores[max(scores, key=scores.get)])
+#+end_src
