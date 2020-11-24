@@ -993,3 +993,32 @@ Your puzzle input is 1113122113.
 
 #+RESULTS:
 : 360154
+
+** part 2
+Neat, right? You might also enjoy hearing John Conway talking about
+this sequence (that's Conway of Conway's Game of Life fame).
+
+Now, starting again with the digits in your puzzle input, apply this
+process 50 times. What is the length of the new result?
+
+#+begin_src python :results output
+  def look_and_say(sequence):
+      segments = [[sequence[0], 1]]
+      for char in sequence[1:]:
+          if char == segments[-1][0]:
+              segments[-1][1] += 1
+          else:
+              segments.append([char, 1])
+
+      new_sequence = ""
+      for segment in segments:
+          new_sequence += str(segment[1]) + segment[0]
+
+      return new_sequence
+
+  sequence = "1113122113"
+  for iteration in range(50):
+      sequence = look_and_say(sequence)
+
+  print(len(sequence))
+#+end_src
