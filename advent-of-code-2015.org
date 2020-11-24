@@ -1119,3 +1119,59 @@ input ~cqjxjnds~
   print(password)
     
 #+end_src
+
+** part 2
+Santa's password expired again. What's the next one?
+
+#+begin_src python :results output
+  letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+
+  def increment(string):
+      last_letter = string[-1]
+      if last_letter == 'z':
+          return increment(string[:-1]) + 'a'
+      else:
+          next_letter = letters[letters.index(last_letter) + 1]
+          return string[:-1] + next_letter
+
+  def has_increase(string):
+      sequence = list(map(lambda x: letters.index(x), string))
+
+      for num in range(len(string)-2):
+          if sequence[num+2] - sequence[num+1] == 1 and \
+             sequence[num+1] - sequence[num] == 1:
+              return True
+
+      return False
+
+  def has_pairs(string):
+      pairs = []
+      for one, two in zip(string[:-1], string[1:]):
+          if one == two:
+              if len(pairs) > 0:
+                  if one not in pairs[0] and two not in pairs[0]:
+                      return True
+              pairs.append((one, two))
+
+      return False
+
+  def no_confuse(string):
+      return 'i' not in string and \
+             'l' not in string and \
+             'o' not in string
+
+  password = "cqjxxyzz"
+  for iteration in range(1000000):
+      password = increment(password)
+      if has_increase(password) and \
+         has_pairs(password) and \
+         no_confuse(password):
+          print("found")
+          break
+
+  print(password)
+#+end_src
+
+#+RESULTS:
+: found
+: cqkaabcc
