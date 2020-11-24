@@ -1331,3 +1331,48 @@ arrangement of the actual guest list?
 
   print(max(happiness))
 #+end_src
+
+** part 2
+In all the commotion, you realize that you forgot to seat yourself. At
+this point, you're pretty apathetic toward the whole thing, and your
+happiness wouldn't really go up or down regardless of who you sit next
+to. You assume everyone else would be just as ambivalent about sitting
+next to you, too.
+
+So, add yourself to the list, and give all happiness relationships
+that involve you a score of 0.
+
+What is the total change in happiness for the optimal seating
+arrangement that actually includes yourself?
+
+#+begin_src python :results output
+  import itertools
+  from collections import defaultdict
+  pref_list = open("inputs/2015-Day13", 'r').read().split("\n")
+
+  prefs = {}
+  for pref in pref_list:
+      parts = pref.split(" ")
+      gl = parts[2]
+      desire = int(parts[3])
+      subj = parts[0]
+      obj = parts[10]
+
+      if gl == "lose":
+          desire *= -1
+
+      if not subj in prefs:
+          prefs[subj] = defaultdict(lambda: 0)
+
+      prefs[subj][obj[:-1]] = desire
+
+  prefs["joey"] = defaultdict(lambda: 0)
+  arrangements = list(itertools.permutations(prefs.keys(), len(prefs)))
+
+  happiness = []
+  num_guests = len(prefs)
+  for a in arrangements:
+      happiness.append(sum(map(lambda x: prefs[a[x]][a[((x+1) % num_guests)]] + prefs[a[((x+1) % num_guests)]][a[x]], range(len(a)))))
+
+  print(max(happiness))
+#+end_src
