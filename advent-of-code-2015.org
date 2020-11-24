@@ -1210,3 +1210,42 @@ What is the sum of all numbers in the document?
   numbers = map(lambda x: int(x), books.split(" "))
   print(sum(numbers))
 #+end_src
+
+** part 2
+Uh oh - the Accounting-Elves have realized that they double-counted
+everything red.
+
+Ignore any object (and all of its children) which has any property
+with the value "red". Do this only for objects ({...}), not arrays
+([...]).
+
+#+begin_quote
+- [1,2,3] still has a sum of 6.
+- [1,{"c":"red","b":2},3] now has a sum of 4, because the middle
+  object is ignored.
+- {"d":"red","e":[1,2,3,4],"f":5} now has a sum of 0, because the
+  entire structure is ignored.
+- [1,"red",5] has a sum of 6, because "red" in an array has no effect.
+#+end_quote
+
+found [[https://old.reddit.com/r/adventofcode/comments/3wh73d/day_12_solutions/cxw7oz1/][reddit user's solution]]
+#+begin_src python :results output
+  from json import loads
+  books = open("inputs/2015-Day12", 'r').read()
+
+  def value(obj):
+      if type(obj) == int:
+          return obj
+      if type(obj) == list:
+          return sum([value(o) for o in obj])
+      if type(obj) != dict:
+          return 0
+      if 'red' in obj.values():
+          return 0
+      return value(list(obj.values()))
+
+  print(value(loads(books)))
+#+end_src
+
+#+RESULTS:
+: 68466
