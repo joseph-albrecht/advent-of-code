@@ -1,0 +1,41 @@
+
+* Day 1
+
+** part 1
+#+begin_src python :results output
+  import itertools
+  data = open("./inputs/2020-Day1", 'r').read().split("\n")
+
+  numbers = []
+  for line in data:
+      numbers.append(int(line))
+
+  combinations = itertools.combinations(numbers, 2)
+
+  for x, y in combinations:
+      if x + y == 2020:
+          print(x*y)
+#+end_src
+
+#+RESULTS:
+: 436404
+
+** part 2
+
+#+begin_src python :results output
+  import itertools
+  data = open("./inputs/2020-Day1", 'r').read().split("\n")
+
+  numbers = []
+  for line in data:
+      numbers.append(int(line))
+
+  combinations = itertools.combinations(numbers, 3)
+
+  for x, y, z in combinations:
+      if x + y + z == 2020:
+          print(x*y*z)
+#+end_src
+
+#+RESULTS:
+: 274879808
