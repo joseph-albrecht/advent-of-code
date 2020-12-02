@@ -39,3 +39,49 @@
 
 #+RESULTS:
 : 274879808
+
+* Day 2
+** part 1
+#+begin_src python :results output
+  data = open("inputs/2020-Day2", 'r').read().split("\n")
+
+  count = 0
+  for line in data:
+      min_max, letter, passw = line.split(" ")
+      lo, hi = [int(x) for x in min_max.split("-")]
+      letter = letter[0:1]
+
+      if passw.count(letter) >= lo and passw.count(letter) <= hi:
+          count += 1
+
+  print(count)
+#+end_src
+
+#+RESULTS:
+: 398
+
+** part 2
+#+begin_src python :results output
+  data = open("inputs/2020-Day2", 'r').read().split("\n")
+
+  count = 0
+  for line in data:
+      min_max, letter, passw = line.split(" ")
+      lo, hi = [int(x) for x in min_max.split("-")]
+      letter = letter[0:1]
+      matches = 0
+
+      if passw[lo-1] == letter:
+          matches += 1
+
+      if passw[hi-1] == letter:
+          matches += 1
+
+      if matches == 1:
+          count += 1
+
+  print(count)
+#+end_src
+
+#+RESULTS:
+: 562
