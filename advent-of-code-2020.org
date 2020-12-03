@@ -85,3 +85,47 @@
 
 #+RESULTS:
 : 562
+
+* Day 3
+** part 1
+#+begin_src python :results output
+data = open("./inputs/2020-Day3", 'r').read().splitlines()
+
+counter = 0
+for row, trees in enumerate(data):
+    tile = trees[(3 * row) % len(trees)]
+    if tile == "#":
+        counter += 1
+
+print(counter)
+#+end_src
+
+#+RESULTS:
+: 242
+
+** part 2
+#+begin_src python :results output
+import functools
+data = open("./inputs/2020-Day3", 'r').read().splitlines()
+
+overs = [1, 3, 5, 7, 1]
+counter = [0, 0, 0, 0, 0]
+for row, trees in enumerate(data):
+    for num, over in enumerate(overs[:-1]):
+        tile = trees[(over * row) % len(trees)]
+        if tile == "#":
+            counter[num] += 1
+
+for row, trees in enumerate(data[0::2]):
+    over = 1
+    tile = trees[(over * row) % len(trees)]
+    if tile == "#":
+        counter[4] += 1
+
+print(counter)
+print(functools.reduce(lambda x, y: x*y, counter))
+#+end_src
+
+#+RESULTS:
+: [82, 242, 71, 67, 24]
+: 2265549792
