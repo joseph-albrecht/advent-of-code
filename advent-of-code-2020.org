@@ -129,3 +129,89 @@ print(functools.reduce(lambda x, y: x*y, counter))
 #+RESULTS:
 : [82, 242, 71, 67, 24]
 : 2265549792
+
+* Day 4
+** part 1
+#+begin_src python :results output
+  data = open("./inputs/2020-Day4", 'r').read().split("\n\n")
+  import re
+
+  needed_fields = [
+      "byr",
+      "iyr",
+      "eyr",
+      "hgt",
+      "hcl",
+      "ecl",
+      "pid",]
+  passports = []
+  for section in data:
+      passport = {}
+      for line in section.split("\n"):
+          pairs = line.split(" ")
+          for pair in pairs:
+              key, value = pair.split(":")
+              passport[key] = value
+      passports.append(passport)
+
+  count = 0
+  for passport in passports:
+      valid = True
+      for field in needed_fields:
+          if field not in passport:
+              valid = False
+
+      if valid:
+          count += 1
+        
+  print(count)
+#+end_src
+
+#+RESULTS:
+: 260
+
+** part 2
+#+begin_src python :results output
+data = open("./inputs/2020-Day4", 'r').read().split("\n\n")
+import re
+
+def height(x):
+    if x[-2:] == "cm":
+        return int(x[:-2]) >= 150 and int(x[:-2]) <= 193
+    elif x[-2:] == "in":
+        return int(x[:-2]) >= 59 and int(x[:-2]) <= 76
+    return False
+
+needed_fields = {
+    "byr": lambda x: re.compile('[0-9]{4}').match(x) and int(x) >= 1920 and int(x) <= 2002,
+    "iyr": lambda x: re.compile('[0-9]{4}').match(x) and int(x) >= 2010 and int(x) <= 2020,
+    "eyr": lambda x: re.compile('[0-9]{4}').match(x) and int(x) >= 2020 and int(x) <= 2030,
+    "hgt": height,
+    "hcl": lambda x: re.compile('^#[0-9a-f]{6}$').match(x),
+    "ecl": lambda x: x in ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"],
+    "pid": lambda x: re.compile('^[0-9]{9}$').match(x),}
+passports = []
+for section in data:
+    passport = {}
+    for line in section.split("\n"):
+        pairs = line.split(" ")
+        for pair in pairs:
+            key, value = pair.split(":")
+            passport[key] = value
+    passports.append(passport)
+count = 0
+for passport in passports:
+    valid = True
+    for field in needed_fields:
+        test = needed_fields[field]
+        if field not in passport or not test(passport[field]):
+            valid = False
+
+    if valid:
+        count += 1
+        
+print(count)
+#+end_src
+
+#+RESULTS:
+: 153
