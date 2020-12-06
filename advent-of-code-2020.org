@@ -215,3 +215,62 @@ print(count)
 
 #+RESULTS:
 : 153
+
+* Day 5
+** part 1
+#+begin_src python :results output
+  data = open("./inputs/2020-Day5", 'r').read().split("\n")
+
+  mapper = {'F': '0', 'B':'1', 'R':'1', 'L':'0'}
+
+  def convert(value, amap):
+      result = ''
+      for char in value:
+          result += amap[char]
+      return int(result, 2)
+
+  passes = []
+  for line in data:
+      row = convert(line[:7], mapper)
+      col = convert(line[-3:], mapper)
+      pass_id = row * 8 + col
+      passes.append(pass_id)
+
+  print(max(passes))
+#+end_src
+
+#+RESULTS:
+: 828
+
+** part 2
+#+begin_src python :results output
+  data = open("./inputs/2020-Day5", 'r').read().split("\n")
+
+  mapper = {'F': '0', 'B':'1', 'R':'1', 'L':'0'}
+
+  def convert(value, amap):
+      result = ''
+      for char in value:
+          result += amap[char]
+      return int(result, 2)
+
+  passes = {}
+  for line in data:
+      row = convert(line[:7], mapper)
+      col = convert(line[-3:], mapper)
+
+      if row not in passes:
+          passes[row] = []
+
+      pass_id = row * 8 + col
+      passes[row].append((row, col, line, pass_id))
+
+  for row in passes:
+      if len(passes[row]) < 8:
+          print(sorted(passes[row]))
+#+end_src
+
+#+RESULTS:
+: [(2, 7, 'FFFFFBFRRR', 23)]
+: [(70, 0, 'BFFFBBFLLL', 560), (70, 1, 'BFFFBBFLLR', 561), (70, 2, 'BFFFBBFLRL', 562), (70, 3, 'BFFFBBFLRR', 563), (70, 4, 'BFFFBBFRLL', 564), (70, 6, 'BFFFBBFRRL', 566), (70, 7, 'BFFFBBFRRR', 567)]
+: [(103, 0, 'BBFFBBBLLL', 824), (103, 1, 'BBFFBBBLLR', 825), (103, 2, 'BBFFBBBLRL', 826), (103, 3, 'BBFFBBBLRR', 827), (103, 4, 'BBFFBBBRLL', 828)]
