@@ -319,3 +319,85 @@ print(count)
 
 #+RESULTS:
 : 2947
+
+* Day 7
+** part 1
+#+begin_src python :results output
+  from functools import lru_cache
+  data = open("./inputs/2020-Day7", 'r').read().split("\n")
+
+  bag_contents = {}
+  for line in data:
+      bag, contents = line[:-1].split(" contain ")
+      bag = bag.split(" ")
+      bag = bag[0] + bag[1]
+      content_bags = contents.split(", ")
+      inner_bags = []
+      for content in content_bags:
+          bag_parts = content.split(" ")
+          try:
+              num = int(bag_parts[0])
+              bag_type = bag_parts[1] + bag_parts[2]
+              inner_bags.append(bag_type)
+          except:
+              continue
+
+      bag_contents[bag] = inner_bags
+
+  def bags_inside(target):
+      bags = []
+      for bag, contents in bag_contents.items():
+          if target in contents:
+              bags.append(bag)
+      return set(bags)
+
+  searched = set()
+  found = bags_inside("shinygold")
+
+  while found.difference(searched):
+      for bag in found.difference(searched):
+          found = found.union(bags_inside(bag))
+          searched.add(bag)
+            
+  print(len(found))
+#+end_src
+
+#+RESULTS:
+: 257
+
+** part 2
+#+begin_src python :results output
+data = open("./inputs/2020-Day7", 'r').read().split("\n")
+
+bag_contents = {}
+bag_number = {}
+for line in data:
+    bag, contents = line[:-1].split(" contain ")
+    bag = bag.split(" ")
+    bag = bag[0] + bag[1]
+    content_bags = contents.split(", ")
+    inner_bags = []
+    for content in content_bags:
+        bag_parts = content.split(" ")
+        try:
+            num = int(bag_parts[0])
+            bag_type = bag_parts[1] + bag_parts[2]
+            inner_bags.append(bag_type)
+            bag_number[(bag, bag_type)] = num
+        except:
+            continue
+
+    bag_contents[bag] = inner_bags
+
+def bags_inside(target):
+    number = 1
+    if target in bag_contents and len(bag_contents[target]) > 0:
+        for bag in bag_contents[target]:
+                number += bag_number[(target, bag)] * bags_inside(bag)
+    return number
+
+print(bags_inside("shinygold") - 1)
+#+end_src
+
+#+RESULTS:
+: 1038
