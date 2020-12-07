@@ -274,3 +274,48 @@ print(count)
 : [(2, 7, 'FFFFFBFRRR', 23)]
 : [(70, 0, 'BFFFBBFLLL', 560), (70, 1, 'BFFFBBFLLR', 561), (70, 2, 'BFFFBBFLRL', 562), (70, 3, 'BFFFBBFLRR', 563), (70, 4, 'BFFFBBFRLL', 564), (70, 6, 'BFFFBBFRRL', 566), (70, 7, 'BFFFBBFRRR', 567)]
 : [(103, 0, 'BBFFBBBLLL', 824), (103, 1, 'BBFFBBBLLR', 825), (103, 2, 'BBFFBBBLRL', 826), (103, 3, 'BBFFBBBLRR', 827), (103, 4, 'BBFFBBBRLL', 828)]
+
+* Day 6
+** part 1
+#+begin_src python :results output
+  data = open("./inputs/2020-Day6", 'r').read().split("\n\n")
+
+  count = 0
+  for section in data:
+      answers = set()
+      for line in section.split("\n"):
+          for char in line:
+              answers.add(char)
+
+      count += len(answers)
+
+  print(count)
+#+end_src
+
+#+RESULTS:
+: 6170
+
+** part 2
+#+begin_src python :results output
+  data = open("./inputs/2020-Day6", 'r').read().split("\n\n")
+
+  count = 0
+  for section in data:
+      all_answered = set()
+      lines = section.split("\n")
+      for num, line in enumerate(lines):
+          passenger = set()
+          for char in line.strip():
+              passenger.add(char)
+          if num is 0:
+              all_answered = passenger
+          else:
+              all_answered = all_answered.intersection(passenger)
+
+      count += len(all_answered)
+
+  print(count)
+#+end_src
+
+#+RESULTS:
+: 2947
