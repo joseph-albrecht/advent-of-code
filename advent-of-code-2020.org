@@ -401,3 +401,98 @@ print(bags_inside("shinygold") - 1)
 
 #+RESULTS:
 : 1038
+
+* Day 8
+** part 1
+#+begin_src python :results output
+data = open("./inputs/2020-Day8", 'r').read().split("\n")
+
+code = []
+nop_jmp = []
+
+for line in data:
+    op, arg = line.split(" ")
+    code.append((op, arg))
+
+def run_gameboy():
+    pos = 0
+    acc = 0
+    run = set()
+
+    while pos not in run:
+        run.add(pos)
+        op, arg = code[pos]
+        if op == "acc":
+            acc += int(arg)
+        elif op == "jmp":
+            pos += int(arg)
+            last_jump = pos
+            continue
+
+        pos += 1
+    return acc
+
+print(run_gameboy())
+
+#+end_src
+
+#+RESULTS:
+: 1451
+
+** part 2
+#+begin_src python :results output
+  data = open("./inputs/2020-Day8", 'r').read().split("\n")
+
+  code = []
+  nop_jmp = []
+
+  for line in data:
+      op, arg = line.split(" ")
+      code.append((op, arg))
+
+  def run_gameboy(add=False, swap=None):
+      pos = 0
+      acc = 0
+      run = set()
+
+      while pos not in run:
+          run.add(pos)
+          if pos >= len(code):
+              print(acc)
+              return True
+          op = None
+          arg = None
+          if pos < len(code):
+              op, arg = code[pos]
+          else:
+              break
+          if pos == swap and op == "jmp":
+              op = "nop"
+          elif pos == swap and op == "nop":
+              op = "jmp"
+        
+          if op == "acc":
+              acc += int(arg)
+          elif op == "jmp":
+              if add:
+                  nop_jmp.append((pos, op))
+              pos += int(arg)
+              last_jump = pos
+              continue
+          elif op == "nop":
+              if add:
+                  nop_jmp.append((pos, op))
+              last_nop = pos
+
+          pos += 1
+      return False
+
+  run_gameboy(True)
+
+  while nop_jmp:
+      pos, op = nop_jmp.pop()
+      output = run_gameboy(False, pos)
+#+end_src
+
+#+RESULTS:
+: 1160
