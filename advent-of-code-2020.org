@@ -496,3 +496,52 @@ print(run_gameboy())
 
 #+RESULTS:
 : 1160
+
+* Day 9
+** part 1
+#+begin_src python :results output
+  import itertools 
+  data = open("./inputs/2020-Day9", 'r').read().split("\n")
+
+  numbers = [int(line) for line in data]
+
+  def sum_function(num, pre):
+      combos = itertools.combinations(pre, 2)
+
+      for combo in combos:
+          if sum(combo) == num:
+              return True
+
+      return False
+
+  for i, number in enumerate(numbers):
+      if  i >= 25 and not sum_function(number, numbers[i-25:i]):
+          print(number)
+#+end_src
+
+#+RESULTS:
+: 1721308972
+
+** part 2
+#+begin_src python :results output
+  import itertools 
+  data = open("./inputs/2020-Day9", 'r').read().split("\n")
+  numbers = [int(line) for line in data]
+  target = 1721308972
+  lo, hi = 0, 0
+
+  while True:
+      num_list = numbers[lo:hi]
+      the_sum = sum(num_list)
+      if the_sum == target:
+          print(min(num_list) + max(num_list))
+          break
+
+      elif the_sum > target:
+          lo += 1
+      elif the_sum < target:
+          hi += 1
+#+end_src
+
+#+RESULTS:
+: 209694133
