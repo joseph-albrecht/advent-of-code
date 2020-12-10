@@ -48,10 +48,10 @@
   count = 0
   for line in data:
       min_max, letter, passw = line.split(" ")
-      lo, hi = [int(x) for x in min_max.split("-")]
+      start, end = [int(x) for x in min_max.split("-")]
       letter = letter[0:1]
 
-      if passw.count(letter) >= lo and passw.count(letter) <= hi:
+      if passw.count(letter) >= start and passw.count(letter) <= end:
           count += 1
 
   print(count)
@@ -67,7 +67,7 @@
   count = 0
   for line in data:
       min_max, letter, passw = line.split(" ")
-      lo, hi = [int(x) for x in min_max.split("-")]
+      start, end = [int(x) for x in min_max.split("-")]
       letter = letter[0:1]
       matches = 0
 
@@ -528,20 +528,91 @@ print(run_gameboy())
   data = open("./inputs/2020-Day9", 'r').read().split("\n")
   numbers = [int(line) for line in data]
   target = 1721308972
-  lo, hi = 0, 0
+  start, end = 0, 0
 
   while True:
-      num_list = numbers[lo:hi]
+      num_list = numbers[start:end]
       the_sum = sum(num_list)
       if the_sum == target:
           print(min(num_list) + max(num_list))
           break
 
       elif the_sum > target:
-          lo += 1
+          start += 1
       elif the_sum < target:
-          hi += 1
+          end += 1
 #+end_src
 
 #+RESULTS:
 : 209694133
+
+* Day 10
+** part 1
+#+begin_src python :results output
+  data = open("./inputs/2020-Day10", 'r').read().split("\n")
+
+  jolts = [int(x) for x in data]
+  jolts = sorted(jolts)
+
+  differences = {1:0, 2:0, 3:0}
+  current_jolt = 0
+  for jolt in jolts:
+      difference = jolt - current_jolt
+      differences[difference] += 1
+      current_jolt = jolt
+
+  differences[3] += 1 #connection to device
+  print(differences[3] * differences[1])
+#+end_src
+
+#+RESULTS:
+: 2664
+
+** part 2
+#+begin_src python :results output
+  from functools import lru_cache
+  data = open("./inputs/2020-Day10", 'r').read().split("\n")
+
+  jolts = [int(x) for x in data]
+  jolts = sorted(jolts)
+  jolts.append(jolts[-1] + 3)
+  jolts = [0,] + jolts
+  jolts = tuple(jolts)
+
+  @lru_cache(None)
+  def make_connection_list(jolts,):
+      if len(jolts) == 1:
+          return [jolts,]
+
+      ways = tuple()
+      current_jolt = jolts[0]
+      end = min(4, len(jolts))
+      for i, jolt in enumerate(jolts[1:end]):
+          if jolt - current_jolt <= 3:
+              more_ways = make_connection_list(jolts[i+1:])
+              ways += tuple([(current_jolt,) + way for way in more_ways])
+
+      return ways
+
+  def calculate_connection_paths(jolts):
+      ways = 1
+      bridges = []
+
+      bridges = [i for i, num in enumerate(jolts[1:]) if jolts[i] - jolts[i-1] == 3]
+      bridges = [0,] + bridges
+      if bridges[-1] is not len(jolts) - 1:
+          bridges.append(len(jolts)-1)
+
+      for start, end in zip(bridges[:-1], bridges[1:]):
+          next_ways = 0
+          more_ways = make_connection_list(jolts[start:end])
+          ways = ways * len(more_ways)
+
+      return ways
+
+  ways = calculate_connection_paths(jolts)
+  print(ways)
+#+end_src
+
+#+RESULTS:
+: 148098383347712
