@@ -616,3 +616,132 @@ print(run_gameboy())
 
 #+RESULTS:
 : 148098383347712
+
+
+* Day 11
+** part 1
+#+begin_src python :results output
+data = open("./inputs/2020-Day11", 'r').read().split("\n")
+
+seating = []
+for line in data:
+    row = [char for char in line]
+    seating.append(row)
+
+def number_adjacent(row, col, seating):
+    num = 0
+    if row > 0 and col > 0 and seating[row-1][col-1] == "#":
+        num += 1
+    if row > 0 and seating[row-1][col] == "#":
+        num += 1
+    if row > 0 and col < len(seating[0]) - 1 and seating[row-1][col+1] == "#":
+        num += 1
+    if col > 0 and seating[row][col-1] == "#":
+        num += 1
+    if col < len(seating[0]) - 1 and seating[row][col+1] == "#":
+        num += 1
+    if row < len(seating) - 1 and col > 0 and seating[row+1][col-1] == "#":
+        num += 1
+    if row < len(seating) - 1 and seating[row+1][col] == "#":
+        num += 1
+    if row < len(seating) - 1 and col < len(seating[0]) - 1 and seating[row+1][col+1] == "#":
+        num += 1
+
+    return num
+    
+def next(seating):
+    new_layout = []
+    for i, row in enumerate(seating):
+        new_row = []
+        for j, seat in enumerate(row):
+            adjacencies = number_adjacent(i, j, seating)
+            if seat == "#" and adjacencies >= 4:
+                new_row.append("L")
+            elif seat == "L" and adjacencies == 0:
+                new_row.append("#")
+            else:
+                new_row.append(seat)
+
+        new_layout.append(new_row)
+    return new_layout
+
+while True:
+    next_seating = next(seating)
+    if next_seating == seating:
+        break
+    else:
+        seating = next_seating
+
+count = 0
+for row in seating:
+    for seat in row:
+        if seat == "#":
+            count += 1
+print(count)
+#+end_src
+
+** part 2
+#+begin_src python :results output
+  data = open("./inputs/2020-Day11", 'r').read().split("\n")
+
+  seating = []
+  for line in data:
+      row = [char for char in line]
+      seating.append(row)
+
+  def look_towards(row, col, delx, dely, seating):
+      x, y = row + delx, col + dely
+      while len(seating) > x >= 0 and len(seating[0]) > y >= 0:
+          if seating[x][y] == "#":
+              return 1
+          elif seating[x][y] == "L":
+              return 0
+          x = x + delx
+          y = y + dely
+
+      return 0
+
+  def number_adjacent(row, col, seating):
+      num = 0
+      num += look_towards(row, col, -1, -1, seating)
+      num += look_towards(row, col, -1,  0, seating)
+      num += look_towards(row, col, -1,  1, seating)
+      num += look_towards(row, col,  0, -1, seating)
+      num += look_towards(row, col,  0,  1, seating)
+      num += look_towards(row, col,  1, -1, seating)
+      num += look_towards(row, col,  1,  0, seating)
+      num += look_towards(row, col,  1,  1, seating)
+
+      return num
+
+  def next(seating):
+      new_layout = []
+      for i, row in enumerate(seating):
+          new_row = []
+          for j, seat in enumerate(row):
+              adjacencies = number_adjacent(i, j, seating)
+              if seat == "#" and adjacencies >= 5:
+                  new_row.append("L")
+              elif seat == "L" and adjacencies == 0:
+                  new_row.append("#")
+              else:
+                  new_row.append(seat)
+
+          new_layout.append(new_row)
+      return new_layout
+
+  while True:
+      next_seating = next(seating)
+      if next_seating == seating:
+          break
+      else:
+          seating = next_seating
+
+  count = 0
+  for row in seating:
+      for seat in row:
+          if seat == "#":
+              count += 1
+
+  print(count)
+#+end_src
