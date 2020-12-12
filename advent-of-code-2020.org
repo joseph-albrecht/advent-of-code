@@ -680,6 +680,9 @@ for row in seating:
 print(count)
 #+end_src
 
+#+RESULTS:
+: 2263
+
 ** part 2
 #+begin_src python :results output
   data = open("./inputs/2020-Day11", 'r').read().split("\n")
@@ -745,3 +748,87 @@ print(count)
 
   print(count)
 #+end_src
+
+#+RESULTS:
+: 2002
+
+* Day 12
+** part 1
+#+begin_src python :results output
+  data = open("./inputs/2020-Day12", 'r').read().split("\n")
+
+  actions = []
+  for line in data:
+      dir = line[0]
+      dist = int(line[1:])
+      actions.append((dir, dist))
+
+  directions = ["E", "S", "W", "N"]
+  direction = "E"
+  x,y = 0,0
+  vectors = {"N":(0,1), "S":(0,-1), "E":(1,0), "W":(-1,0)}
+
+  for dir, dist in actions:
+      if dir in vectors:
+          dx, dy = vectors[dir]
+          for i in range(dist):
+              x += dx
+              y += dy
+      if dir == "F":
+          dx, dy = vectors[direction]
+          for i in range(dist):
+              x += dx
+              y += dy
+      if dir == "R":
+          direction = directions[(directions.index(direction) + dist // 90) % 4]
+      if dir == "L":
+          direction = directions[(directions.index(direction) - dist // 90) % 4]
+
+  print(abs(x) + abs(y))
+#+end_src
+
+#+RESULTS:
+: 1032
+
+** part 2
+#+begin_src python :results output
+  data = open("./inputs/2020-Day12", 'r').read().split("\n")
+
+  actions = []
+  for line in data:
+      dir = line[0]
+      dist = int(line[1:])
+      actions.append((dir, dist))
+
+  wx,wy = 10,1
+  x,y = 0,0
+  vectors = {"N":(0,1), "S":(0,-1), "E":(1,0), "W":(-1,0)}
+
+  for dir, dist in actions:
+      if dir in vectors:
+          dx, dy = vectors[dir]
+          for i in range(dist):
+              wx += dx
+              wy += dy
+      if dir == "F":
+          for i in range(dist):
+              x += wx
+              y += wy
+      if dir == "R":
+          rotations = dist // 90
+          for r in range(rotations):
+              temp = wx
+              wx = wy
+              wy = -temp
+      if dir == "L":
+          rotations = dist // 90
+          for r in range(rotations):
+              temp = wx
+              wx = -wy
+              wy = temp
+
+  print(abs(x) + abs(y))
+#+end_src
+
+#+RESULTS:
+: 156735
