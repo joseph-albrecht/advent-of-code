@@ -1099,3 +1099,146 @@ while game_step < 30000000:
 
 print(last_number)
 #+end_src
+
+* Day 16
+
+** part 1
+#+begin_src python :results output
+  import functools
+  lines = open("./inputs/2020-Day16", 'r').read().split("\n")
+
+  fields = {}
+  my_ticket = []
+  other_tickets = []
+  part = 0
+  for line in lines:
+      if line == "":
+          part += 1
+          continue
+      if part == 0:
+          name, ranges = line.split(": ")
+          range_one, range_two = ranges.split(" or ")
+          range_one = [int(x) for x in range_one.split("-")]
+          range_two = [int(x) for x in range_two.split("-")]
+          fields[name] = [range_one, range_two]
+      elif part == 1:
+          if line[0:4] != "your":
+              numbers = [int(x) for x in line.split(",")]
+              my_ticket = [int(x) for x in numbers]
+      else:
+          if line[0:4] != "near":
+              numbers = [int(x) for x in line.split(",")]
+              other_tickets.append(numbers)
+
+  def check_for_error(ticket):
+      errors = []
+      for number in ticket:
+          valid = False
+          for name, constraints in fields.items():
+              for lo, hi in constraints:
+                  if number >= lo and number <= hi:
+                      valid = True
+
+          if not valid:
+              errors.append(number)
+
+      return errors
+
+  total_errors = []
+  for ticket in other_tickets:
+      total_errors += check_for_error(ticket)
+
+  print(sum(total_errors))
+#+end_src
+
+#+RESULTS:
+: 23036
+
+** part 2
+#+begin_src python :results output
+  import functools
+  lines = open("./inputs/2020-Day16", 'r').read().split("\n")
+
+  fields = {}
+  my_ticket = []
+  other_tickets = []
+  part = 0
+  for line in lines:
+      if line == "":
+          part += 1
+          continue
+      if part == 0:
+          name, ranges = line.split(": ")
+          range_one, range_two = ranges.split(" or ")
+          range_one = [int(x) for x in range_one.split("-")]
+          range_two = [int(x) for x in range_two.split("-")]
+          fields[name] = [range_one, range_two]
+      elif part == 1:
+          if line[0:4] != "your":
+              numbers = [int(x) for x in line.split(",")]
+              my_ticket = [int(x) for x in numbers]
+      else:
+          if line[0:4] != "near":
+              numbers = [int(x) for x in line.split(",")]
+              other_tickets.append(numbers)
+
+  cache = {}
+  def check_for_error(ticket):
+      if ticket in cache:
+          return cache[ticket]
+
+      invalid = False
+      for name, constraints in fields.items():
+          for lo, hi in constraints:
+              if ticket >= lo and ticket <= hi:
+                  cache[ticket] = False
+                  return False
+
+      cache[ticket] = True
+      return True
+
+  def matching_fields(field):
+      matching_fields = set()
+      for name, constraints in fields.items():
+          for lo, hi in constraints:
+              if field >= lo and field <= hi:
+                  matching_fields.add(name)
+
+      return matching_fields
+
+  good_tickets = []
+  for ticket in other_tickets:
+      valid = True
+      for number in ticket:
+          wrong = check_for_error(number)
+          if wrong:
+              valid = False
+              break
+      if valid:
+          good_tickets.append(ticket)
+
+  potential_fields = [set([name for name in fields]) for _ in fields]
+  for ticket in good_tickets:
+      for i, number in enumerate(ticket):
+          potential_matches = matching_fields(number)
+          potential_fields[i] = potential_fields[i].intersection(potential_matches)
+
+  the_fields = {}
+
+  for i in range(len(potential_fields)):
+      for i, fields in enumerate(potential_fields):
+          if len(fields) == 1:
+              the_fields[i] = fields.pop()
+              for fields in potential_fields:
+                  if the_fields[i] in fields:
+                      fields.remove(the_fields[i])
+              break
+
+  def product(numbers):
+      return functools.reduce(lambda x, y: x*y, numbers)
+
+  print(product([my_ticket[index] for index, field in the_fields.items() if str.startswith(field, "departure")]))
+#+end_src
+
+#+RESULTS:
+: 1909224687553
