@@ -1242,3 +1242,161 @@ print(last_number)
 
 #+RESULTS:
 : 1909224687553
+
+* Day 17
+
+** part 1
+#+begin_src python :results output
+  lines = open("./inputs/2020-Day17", 'r').read().split("\n")
+
+  grid = {}
+  for i, line in enumerate(lines):
+      z = 0
+      y = i
+      for x, location in enumerate(line):
+          if location == "#":
+              grid[(x,y,z)] = "#"
+          elif location == ".":
+              grid[(x,y,z)] = "."
+
+  def neighbors(x, y, z, grid):
+      n = 0
+      for i in range(x-1, x+2):
+          for j in range(y-1, y+2):
+              for k in range(z-1, z+2):
+                  if not (x == i and y == j and z == k):
+                      if (i,j,k) in grid and grid[(i,j,k)] == "#":
+                          n += 1
+      return n
+
+  def step(grid):
+      numbered_grid = {}
+      minx, maxx = 0, 0
+      miny, maxy = 0, 0
+      minz, maxz = 0, 0
+      for x, y, z in grid:
+          if x > maxx:
+              maxx = x
+          if x < minx:
+              minx = x
+          if y > maxy:
+              maxy = y
+          if y < miny:
+              miny = y
+          if z > maxz:
+              maxz = z
+          if z < minz:
+              minz = z
+          numbered_grid[(x,y,z)] = neighbors(x,y,z, grid)
+
+      for i in range(minx-1, maxx+2):
+          for j in range(miny-1, maxy+2):
+              for k in range(minz-1, maxz+2):
+                  numbered_grid[(i,j,k)] = neighbors(i,j,k, grid)
+
+      next_grid = {}
+      for (x, y, z), n in numbered_grid.items():
+          if n in (2, 3) and (x,y,z) in grid and grid[(x,y,z)] == "#":
+              next_grid[(x,y,z)] = "#"
+          elif n == 3 and ((x,y,z) not in grid or grid[(x,y,z)] == "."):
+              next_grid[(x,y,z)] = "#"
+          else:
+              next_grid[(x,y,z)] = "."
+
+      return next_grid
+
+  for i in range(6):
+      grid = step(grid)
+
+  count = 0
+  for location in grid:
+      if grid[location] == "#":
+          count += 1
+
+  print(count)
+#+end_src
+
+#+RESULTS:
+: 293
+
+** part 2
+#+begin_src python :results output
+  lines = open("./inputs/2020-Day17", 'r').read().split("\n")
+
+  grid = {}
+  for i, line in enumerate(lines):
+      z = 0
+      y = i
+      w = 0
+      for x, location in enumerate(line):
+          if location == "#":
+              grid[(x,y,z,w)] = "#"
+          elif location == ".":
+              grid[(x,y,z,w)] = "."
+
+  def neighbors(x, y, z, w, grid):
+      n = 0
+      for i in range(x-1, x+2):
+          for j in range(y-1, y+2):
+              for k in range(z-1, z+2):
+                  for l in range(w-1, w+2):
+                      if not (x == i and y == j and z == k and w == l):
+                          if (i,j,k,l) in grid and grid[(i,j,k,l)] == "#":
+                              n += 1
+      return n
+
+  def step(grid):
+      numbered_grid = {}
+      minx, maxx = 0, 0
+      miny, maxy = 0, 0
+      minz, maxz = 0, 0
+      minw, maxw = 0, 0
+      for x, y, z, w in grid:
+          if x > maxx:
+              maxx = x
+          if x < minx:
+              minx = x
+          if y > maxy:
+              maxy = y
+          if y < miny:
+              miny = y
+          if z > maxz:
+              maxz = z
+          if z < minz:
+              minz = z
+          if w > maxw:
+              maxw = w
+          if w < minw:
+              minw = w
+          numbered_grid[(x,y,z,w)] = neighbors(x,y,z,w, grid)
+
+      for i in range(minx-1, maxx+2):
+          for j in range(miny-1, maxy+2):
+              for k in range(minz-1, maxz+2):
+                  for l in range(minw-1, maxw+2):
+                      numbered_grid[(i,j,k,l)] = neighbors(i,j,k,l, grid)
+
+      next_grid = {}
+      for (x, y, z, w), n in numbered_grid.items():
+          if n in (2, 3) and (x,y,z,w) in grid and grid[(x,y,z,w)] == "#":
+              next_grid[(x,y,z,w)] = "#"
+          elif n == 3 and ((x,y,z,w) not in grid or grid[(x,y,z,w)] == "."):
+              next_grid[(x,y,z,w)] = "#"
+          else:
+              next_grid[(x,y,z,w)] = "."
+
+      return next_grid
+
+  for i in range(6):
+      grid = step(grid)
+
+  count = 0
+  for location in grid:
+      if grid[location] == "#":
+          count += 1
+
+  print(count)
+#+end_src
+
+#+RESULTS:
+: 1816
