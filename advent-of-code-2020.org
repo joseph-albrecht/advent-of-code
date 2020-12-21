@@ -997,3 +997,105 @@ print(total)
 
 #+RESULTS:
 : 3608464522781
+
+* Day 15
+
+** part 1
+
+#+begin_src python :results output
+game = [int(num) for num in open("./inputs/2020-Day15", 'r').read().split(",")]
+
+last_number = game[-1]
+numbers = {}
+
+def update(number, step):
+    if (2, number) in numbers:
+        numbers[(1, number)] = numbers[(2, number)]
+        numbers[(2, number)] = step
+    elif (1, number) in numbers:
+        numbers[(2, number)] = step
+    else:
+        numbers[(1, number)] = step
+
+def difference(number):
+    first = None
+    second = None
+    try:
+        first = numbers[(1, number)]
+    except:
+        pass
+    try:
+        second = numbers[(2, number)]
+    except:
+        pass
+
+    if first != None and second != None:
+        return second - first
+    else:
+        return 0
+
+for i, number in enumerate(game):
+    update(number, i+1)
+
+game_step = len(game)
+
+while game_step < 2020:
+    new_value = difference(last_number)
+    update(new_value, game_step + 1)
+    game_step += 1
+    last_number = new_value
+
+print(last_number)
+#+end_src
+
+#+RESULTS:
+: 253
+
+** part 2
+SO SLOW
+#+begin_src python :results output
+game = [int(num) for num in open("./inputs/2020-Day15", 'r').read().split(",")]
+
+last_number = game[-1]
+numbers = {}
+
+def update(number, step):
+    if (2, number) in numbers:
+        numbers[(1, number)] = numbers[(2, number)]
+        numbers[(2, number)] = step
+    elif (1, number) in numbers:
+        numbers[(2, number)] = step
+    else:
+        numbers[(1, number)] = step
+
+def difference(number):
+    first = None
+    second = None
+    try:
+        first = numbers[(1, number)]
+    except:
+        pass
+    try:
+        second = numbers[(2, number)]
+    except:
+        pass
+
+    if first != None and second != None:
+        return second - first
+    else:
+        return 0
+
+for i, number in enumerate(game):
+    update(number, i+1)
+
+game_step = len(game)
+
+while game_step < 30000000:
+    print(game_step)
+    new_value = difference(last_number)
+    update(new_value, game_step + 1)
+    game_step += 1
+    last_number = new_value
+
+print(last_number)
+#+end_src
