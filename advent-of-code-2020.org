@@ -915,3 +915,85 @@ for schedule in schedules:
 #+RESULTS:
 : winner: 1000001
 : winner: 780601154795940
+
+* Day 14
+
+** part 1
+#+begin_src python :results output
+  data = open("./inputs/2020-Day14", 'r').read().split("\n")
+
+  memory = {}
+  mask = None
+  for line in data:
+      address = None
+      value = None
+      if line[:4] == "mask":
+          mask = line.split(" ")[-1]
+      else:
+          address, value = line.split(" = ")
+          value = bin(int(value))[2:].zfill(36)
+          masked_value = ""
+          for char_val, char_mask in zip(value, mask):
+              if char_mask == "X":
+                  masked_value += char_val
+              else:
+                  masked_value += char_mask
+          memory[address] = masked_value
+
+  total = 0
+  for address, value in memory.items():
+      total += int(value, 2)
+
+  print(total)
+#+end_src
+
+#+RESULTS:
+: 12610010960049
+
+** part 2
+#+begin_src python :results output
+data = open("./inputs/2020-Day14", 'r').read().split("\n")
+
+memory = {}
+mask = None
+for line in data:
+    address = None
+    value = None
+    if line[:4] == "mask":
+        mask = line.split(" ")[-1]
+    else:
+        address, value = line.split(" = ")
+        address = address[4:]
+        address = address[:-1]
+        address = bin(int(address))[2:].zfill(36)
+        value = bin(int(value))[2:].zfill(36)
+
+        new_addresses = [""]
+        for i in range(36):
+            na = []
+            if mask[i] == "1":
+                for a in new_addresses:
+                    na.append(a + "1")
+                new_addresses = na
+            elif mask[i] == "0":
+                for a in new_addresses:
+                    na.append(a + address[i])
+                new_addresses = na
+            else:
+                for a in new_addresses:
+                    na.append(a + "1")
+                    na.append(a + "0")
+                new_addresses = na
+
+        for a in new_addresses:
+            memory[a] = value
+
+total = 0
+for address, value in memory.items():
+    total += int(value, 2)
+
+print(total)
+#+end_src
+
+#+RESULTS:
+: 3608464522781
