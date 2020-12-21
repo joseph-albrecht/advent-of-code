@@ -832,3 +832,86 @@ print(count)
 
 #+RESULTS:
 : 156735
+
+
+* Day 13
+** part 1
+#+begin_src python :results output
+data = open("./inputs/2020-Day13",'r').read().split("\n")
+
+dt = int(data[0])
+bts = [int(x) for x in data[1].split(",") if x != "x"]
+
+print(dt)
+all_times = {}
+bus = None
+for t in bts:
+    
+    time = 0
+    while time < dt:
+        time += t
+    all_times[t] = time
+
+my_bus = 0
+earliest = 99999999990
+for bus, time in all_times.items():
+    if time < earliest:
+        earliest = time
+        my_bus = bus
+
+print(f"bus: {my_bus} departure: {earliest} arrival: {dt} value: {(earliest - dt) * my_bus}")
+    
+#+end_src
+
+#+RESULTS:
+: 1000001
+: bus: 29 departure: 1000007 arrival: 1000001 value: 174
+
+** part 2
+#+begin_src python :results output
+import functools
+data = open("./inputs/2020-Day13",'r').read().split("\n")
+
+schedules = []
+
+for line in data:
+    buses = line.split(",")
+    schedule = {int(route): offset for offset, route in enumerate(buses) if route != "x"}
+    schedules.append(schedule)
+
+def product(numbers):
+    return functools.reduce(lambda x, y: x*y, numbers)
+
+def is_multiple(number, divisor):
+    return number % divisor == 0
+
+def tempo_route(schedule):
+    for route, time in schedule.items():
+        if time == 0:
+            return route
+
+def find_time(schedule):
+    tempo = tempo_route(schedule)
+    time = tempo
+
+    while True:
+        valid = True
+        multiples = []
+        for route, offset in schedule.items():
+            if is_multiple(time + offset, route):
+                multiples.append(route)
+            else:
+                valid = False
+        if valid:
+            return time
+        else:
+            time += product(multiples)
+
+for schedule in schedules:
+    winning_time = find_time(schedule)
+    print(f"winner: {winning_time}")
+#+end_src
+
+#+RESULTS:
+: winner: 1000001
+: winner: 780601154795940
