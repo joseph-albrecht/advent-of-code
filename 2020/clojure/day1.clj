@@ -1,0 +1,30 @@
+(ns advent.day1
+  (:require [clojure.java.io :as io]))
+
+(def test-input [1721
+                 979
+                 366
+                 299
+                 675
+                 1456])
+(def real-input
+  (->> (io/resource "day1.txt")
+       io/reader
+       line-seq
+       (map #(Long/parseLong % 10))))
+
+(defn part1 [input]
+  (set (for [x     input
+             y     input
+             :when (= 2020 (+ x y))]
+         (* x y))))
+
+(defn part2 [input]
+  (set (for [x     input
+             y     input
+             z     input
+             :when (= 2020 (+ x y z))]
+         (* x y z))))
+
+(part1 real-input)
+(part2 real-input)
