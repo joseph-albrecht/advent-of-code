@@ -3,44 +3,39 @@
   (:require [clojure.string :as string]
             [clojure.java.io :as io]))
 
+(def lines (-> (slurp "inputs/day1.txt")
+               (string/split #"\n")))
+(def depths  (map #(Integer/parseInt %) lines))
+
 ;; original part one
-(comment
-  (let [windows (-> (slurp "inputs/day1.txt")
-                    (string/split #"\n")
-                    (->> (map #(Integer/parseInt %))))]
-    (reduce (fn [[counter lst] el]
+(-> (reduce (fn [[counter lst] el]
               (if (> el lst)
                 [(inc counter) el]
                 [counter el]))
-            [0 (first windows)])))
+            [0 (first depths)]
+            depths)
+    first);; => 1791
 
 ;; improved part one
-(-> (slurp "inputs/day1.txt")
-    (string/split #"\n")
-    (->> (map #(Integer/parseInt %))
-         (partition 2 1)
-         (filter (fn [[one two]] (< one two)))
-         count));; => 1791
+(->> depths
+     (partition 2 1)
+     (filter (fn [[one two]] (< one two)))
+     count);; => 1791
+
+(def windows (partition 3 1 depths))
 
 ;; original part two
-(comment
-  (let [windows (-> (slurp "inputs/day1.txt")
-                    (string/split #"\n")
-                    (->> (map #(Integer/parseInt %))
-                         (partition 3 1)))]
-    (reduce (fn [[counter lst] el]
+(-> (reduce (fn [[counter lst] el]
               (if (> (reduce + el) (reduce + lst))
                 [(inc counter) el]
                 [counter el]))
             [0 (first windows)]
-            windows)))
+            windows)
+    first);; => 1822
 
 ;; improved part two
-(-> (slurp "inputs/day1.txt")
-    (string/split #"\n")
-    (->> (map #(Integer/parseInt %))
-         (partition 3 1)
-         (map #(reduce + %))
-         (partition 2 1)
-         (filter (fn [[one two]] (< one two)))
-         count));; => 1822
+(->> windows
+     (map #(reduce + %))
+     (partition 2 1)
+     (filter (fn [[one two]] (< one two)))
+     count);; => 1822
