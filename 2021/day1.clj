@@ -1,4 +1,4 @@
-(ns aoc.2019.day1
+(ns aoc.2021.day1
   (:import java.lang.Math)
   (:require [clojure.string :as string]
             [clojure.java.io :as io]))
