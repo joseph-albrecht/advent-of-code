@@ -21,6 +21,7 @@
     (= movement "down")
     [x (+ y amt)]))
 
+
 (->> (reduce move [0 0] moves)
      (reduce *));; => 1728414
 
