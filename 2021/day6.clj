@@ -9,17 +9,12 @@
 
 (defn parse-fish
   [input]
-  (let [fish (-> input
-                 (string/split #",")
-                 (->> (mapv (fn [num] (Integer/parseInt num))))
-                 )
-        pool (reduce (fn [school fish]
-                       (update school fish (fn [val] (if val (inc val) 1))))
-                     {} fish)]
-    (reduce (fn [pool age]
-              (update pool age #(or % 0)))
-            pool
-            (range 9))))
+  (-> input
+      (string/split #",")
+      (->> (mapv (fn [num] (Integer/parseInt num)))
+           (reduce (fn [school fish]
+                     (update school fish inc))
+                   (make-pool)))))
 
 (defn age-fish
   [pool]
