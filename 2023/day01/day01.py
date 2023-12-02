@@ -22,7 +22,7 @@ for line in input:
     for i, c in enumerate(line):
         if c in [str(a) for a in range(10)]:
             number += c
-            beg = 1
+            beg = i+1
         else:
             end = i+1
             for start in range(beg, end):
